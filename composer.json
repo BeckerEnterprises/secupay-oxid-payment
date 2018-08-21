@@ -1,0 +1,15 @@
+{
+  "name": "secupay/secupay-oxid-payment",
+  "description": "The secupay module for Oxid 6",
+  "type": "oxideshop-module",
+  "keywords": ["oxid", "secupay", "payment"],
+  "homepage": "https://www.secupay.com/",
+  "license": [
+    "Apache-2.0"
+  ],
+  "extra": {
+    "oxideshop": {
+      "target-directory": "secupay"
+    }
+  }
+}
