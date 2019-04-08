@@ -1,4 +1,14 @@
 <?php
+/**
+ * secupay Payment Module
+ * @author    secupay AG
+ * @copyright 2019, secupay AG
+ * @license   LICENSE.txt
+ * @category  Payment
+ *
+ * Description:
+ *  Oxid Plugin for integration of secupay AG payment services
+ */
 
 header("content-type:application/json");
 
@@ -13,12 +23,13 @@ if (!function_exists('isAdmin')) {
      *
      * @return bool
      */
-    function isAdmin() {
+    function isAdmin()
+    {
         return false;
     }
 }
 
-$hash = $_REQUEST['hash'];
+$hash   = $_REQUEST['hash'];
 $apikey = $_REQUEST['apikey'];
 
 $params = array("apikey" => $apikey, "hash" => $hash);
@@ -28,7 +39,7 @@ if (is_string($hash) && !empty($hash) && is_string($apikey) && !empty($apikey)) 
     $answer = $sp_api->request();
     echo(json_encode($answer->data));
 
-    $oDB = oxDb::getDb();
+    $oDB            = oxDb::getDb();
     $oDB_connection = oxDb::getInstance();
 
     if ($answer->check_response() && !empty($answer->data->status)) {
@@ -37,17 +48,23 @@ if (is_string($hash) && !empty($hash) && is_string($apikey) && !empty($apikey)) 
         }
 
         $status = '';
-        $msg = '';
+        $msg    = '';
 
-        if (!empty($answer->data->status_description) && is_string($answer->data->status_description) && strlen($answer->data->status_description) > 2) {
+        if (!empty($answer->data->status_description) && is_string($answer->data->status_description)
+            && strlen(
+                $answer->data->status_description
+            ) > 2) {
             $status = $answer->data->status_description;
         }
 
-        if (!empty($answer->data->payment_status) && is_string($answer->data->payment_status) && strlen($answer->data->payment_status) > 2) {
+        if (!empty($answer->data->payment_status) && is_string($answer->data->payment_status)
+            && strlen(
+                $answer->data->payment_status
+            ) > 2) {
             $msg = "Status: " . $answer->data->payment_status;
         }
 
-        if(!empty($status) || !empty($msg)) {
+        if (!empty($status) || !empty($msg)) {
             secupay_table::createStatusEntry($hash, $msg, $status);
         }
     }
