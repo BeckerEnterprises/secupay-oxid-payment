@@ -343,7 +343,7 @@ namespace Secupay\Payment\Application\Controller
 			$sOrderId = $this->getOrderId();
 			$oOrder = oxNew(Order::class);
 
-			if($oOrder->load($oID))
+			if($oOrder->load($sOrderId))
 			{
 				$oOrderNumber = $oOrder->oxorder__oxordernr->value;
 				Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, updateOrderNumber', 'order number: '.$oOrderNumber, 'hash: '.$sHash);

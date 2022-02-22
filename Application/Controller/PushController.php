@@ -44,7 +44,7 @@ namespace Secupay\Payment\Application\Controller
 				Logger::log($this->isLoggingEnabled(), 'secupay_push, render', 'HOST: '.SecupayApi::SECUPAY_HOST);
 
 				//check referrer            
-				if(array_key_exists('host', $aParameters) && $aParameters['host'] == SecupayApi::SECUPAY_HOST)
+				if(array_key_exists('host', $aParameters) && array_key_exists('host', $aParameters['host']) && $aParameters['host']['host'] == SecupayApi::SECUPAY_HOST)
 				{
 					if($this->validateRequestParameters())
 					{
@@ -101,7 +101,7 @@ namespace Secupay\Payment\Application\Controller
 				}
 				else
 				{
-					Logger::log($this->isLoggingEnabled(), 'secupay_push, render host validation failed for: '.$aParameters['host']);
+					Logger::log($this->isLoggingEnabled(), 'secupay_push, render host validation failed'.(array_key_exists('host', $aParameters) ? ' for: '.$aParameters['host']['host'] : ''));
 					$sResponse = 'ack=Disapproved&error=request+invalid';
 				}
 				echo $sResponse.'&'.http_build_query($_POST);
@@ -120,7 +120,7 @@ namespace Secupay\Payment\Application\Controller
 			$oDB = DatabaseProvider::getDb();
 			$aParameters = $this->getRequestParameters();
 
-			$sQuery = 'SELECT oxorder_id FROM oxsecupay WHERE `hash` = '.$oDB->quote($aParameters['hash']).' AND oxordernr NOT IS NULL;';
+			$sQuery = 'SELECT oxorder_id FROM oxsecupay WHERE `hash` = '.$oDB->quote($aParameters['hash']).' AND oxordernr IS NOT NULL;';
 			Logger::log($this->isLoggingEnabled(), 'secupay_push, getOrder', $sQuery);
 			$sID = $oDB->getOne($sQuery);
 
