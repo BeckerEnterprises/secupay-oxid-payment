@@ -96,11 +96,10 @@
 					forceReloadingListFrame();
 					reloadListFrame();
 					/* TODO Lightbox Info
-					{
 					"status": "accepted",
 					"message": "SECUPAY_AJAX_STATUS_FAILED",
 					"response": {
-						"hash": "mxcrymrnqzvs5948447",
+						"hash": "xxxxxxxxxxxxxxxxxxx",
 						"status": "accepted",
 						"created": "2022-02-22 04:33:52",
 						"demo": 1,
@@ -108,24 +107,23 @@
 						"amount": 56641,
 						"currency": "EUR",
 						"opt": {
-						"recipient_legal": "secupay AG, Goethestraße 6, 01896 Pulsnitz",
-						"payment_link": "https://api.secupay.ag/payment/mxcrymrnqzvs5948447",
-						"payment_qr_image_url": "https://api.secupay.ag/qr.php?d=https%3A%2F%2Fapi.secupay.ag%2Fpayment%2Fmxcrymrnqzvs5948447",
-						"transfer_payment_data": {
-							"purpose": "TA 46491113 DT 20220222",
-							"accountowner": "Secupay AG",
-							"iban": "DE75 8504 0061 1005 5463 71",
-							"bic": "COBADEFFXXX",
-							"accountnumber": "1005546371",
-							"bankcode": "85040061",
-							"bankname": "Commerzbank CC"
-						},
-						"invoice_number": "11392",
-						"shipping_date": "2022-02-22 12:11:00",
-						"shipped": true
+							"recipient_legal": "secupay AG, Goethestraße 6, 01896 Pulsnitz",
+							"payment_link": "https://api.secupay.ag/payment/xxxxxxxxxxxxxxxxxxx",
+							"payment_qr_image_url": "https://api.secupay.ag/qr.php?d=https%3A%2F%2Fapi.secupay.ag%2Fpayment%2Fxxxxxxxxxxxxxxxxxxx",
+							"transfer_payment_data": {
+								"purpose": "TA 00000000 DT 20220222",
+								"accountowner": "Secupay AG",
+								"iban": "DE75 8504 0061 1005 5463 71",
+								"bic": "COBADEFFXXX",
+								"accountnumber": "1005546371",
+								"bankcode": "85040061",
+								"bankname": "Commerzbank CC"
+							},
+							"invoice_number": "00000",
+							"shipping_date": "2022-02-22 12:11:00",
+							"shipped": true
+							}
 						}
-					}
-					}
 					*/
 				}
 			};
