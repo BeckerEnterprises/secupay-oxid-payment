@@ -19,6 +19,8 @@ namespace Secupay\Payment\Application\Controller\Admin
 {
 	use \Secupay\Payment\Core\SecupayApi;
 	use \Secupay\Payment\Core\PaymentTypes;
+	use \Secupay\Payment\Core\Table;
+	use \Secupay\Payment\Core\Logger;
 
 	use \OxidEsales\Eshop\Core\DatabaseProvider;
 	use \OxidEsales\Eshop\Application\Controller\Admin\AdminListController;

@@ -34,8 +34,8 @@
 
 		[{block name="checkout_order_details"}]
 			<div style="text-align: center;">
-				<iframe src="[{$oView->getIframeUrl()}]" style="border:none; height:660px; width:100%; max-width:560px;" name="secupay_iframe" id="payment_frame">
-					<p>[{oxmultilang ident="SECUPAY_IFRAMES_NOT_SUPPORTED"}]<a href="[{$oView->getIframeUrl()}]">Secupay</a></p>
+				<iframe src="[{$oView->getSecupayIframeUrl()}]" style="border:none; height:660px; width:100%; max-width:560px;" name="secupay_iframe" id="payment_frame">
+					<p>[{oxmultilang ident="SECUPAY_IFRAMES_NOT_SUPPORTED"}]<a href="[{$oView->getSecupayIframeUrl()}]">Secupay</a></p>
 				</iframe>
 			</div>
     	[{/block}]

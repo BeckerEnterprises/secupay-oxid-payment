@@ -21,6 +21,7 @@ namespace Secupay\Payment\Application\Controller
 	use \Secupay\Payment\Core\Codec;
 	use \Secupay\Payment\Core\PaymentTypes;
 	use \Secupay\Payment\Core\Table;
+	use \Secupay\Payment\Core\Logger;
 
 	use \OxidEsales\Facts\Facts;
 
@@ -389,10 +390,10 @@ namespace Secupay\Payment\Application\Controller
 								if(property_exists($oResponseData, 'amount'))
 								{
 									$iAmountReceived = floor($oResponseData->amount);
-									$iAmountBasket = $this->getBasketAmount();
+									$iAmountBasket = floor($this->getSession()->getBasket()->getPrice()->getBruttoPrice() * 100.0);
 
 									$blStatusOK = in_array($oResponseData->status, ['accepted', 'authorized', 'scored']);
-									$blPrepay = ($sPaymentId = $this->getPayment()->getId()) && ($oPaymentType = PaymentTypes::getPaymentType($sPaymentId)) && ($oPaymentType.getType() == 'prepay');
+									$blPrepay = ($sPaymentId = $this->getPayment()->getId()) && ($oPaymentType = PaymentTypes::getPaymentType($sPaymentId)) && ($oPaymentType->getType() == 'prepay');
 
 									if(($blStatusOK || $blPrepay) && ($iAmountReceived == $iAmountBasket))
 									{
@@ -426,6 +427,7 @@ namespace Secupay\Payment\Application\Controller
 		{
 			try
 			{
+				$oLanguage = Registry::getLang();
 				$oConfig = $this->getConfig();
 				$oSession = $this->getSession();
 				$oDB = DatabaseProvider::getDb();
@@ -452,7 +454,7 @@ namespace Secupay\Payment\Application\Controller
 					Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, createSecupayTransaction', 'order id: '.$sOrderId);
 
 					$sTitle = '';
-					try { $sTitle = Registry::getLang()->translateString($oUser->oxuser__oxsal->value, Registry::getLang()->getTplLanguage(), $this->isAdmin()); }
+					try { $sTitle = $oLanguage->translateString($oUser->oxuser__oxsal->value, $oLanguage->getTplLanguage(), $this->isAdmin()); }
 					catch(LanguageException $oEx) { } // is thrown in debug mode and has to be caught here, as smarty hangs otherwise!
 
 					$aData = [
@@ -491,7 +493,7 @@ namespace Secupay\Payment\Application\Controller
 					if(!$oConfig->getConfigParam('iSecupayPaymentMode'))
 						$aData['demo'] = 1;
 
-					if(($sLangAbbr = $oLang->getLanguageAbbr($oLang->getTplLanguage())) && ($sLangAbbr === 'en'))
+					if(($sLangAbbr = $oLanguage->getLanguageAbbr($oLanguage->getTplLanguage())) && ($sLangAbbr === 'en'))
 						$aData['language'] = 'en_US';
 					else
 						$aData['language'] = 'de_DE';
@@ -519,7 +521,7 @@ namespace Secupay\Payment\Application\Controller
 					$aProducts = [];
 					foreach($oBasket->getContents() as $oBasketItem)
 					{
-						$oProduct = new stdClass();
+						$oProduct = new \stdClass();
 						$oProduct->article_number = $oBasketItem->getArticle()->getFieldData('oxartnum');
 						$oProduct->name = $oBasketItem->getTitle();
 						$oProduct->model = $oBasketItem->getArticle()->getFieldData('oxshortdesc');
@@ -534,7 +536,7 @@ namespace Secupay\Payment\Application\Controller
 
 					if($oDeliveryAddress = $oOrder->getDelAddressInfo())
 					{
-						$aData['delivery_address'] = new stdClass();
+						$aData['delivery_address'] = new \stdClass();
 						$aData['delivery_address']->firstname = $oDeliveryAddress->oxaddress__oxfname->value;
 						$aData['delivery_address']->lastname = $oDeliveryAddress->oxaddress__oxlname->value;
 						$aData['delivery_address']->street = $oDeliveryAddress->oxaddress__oxstreet->value;
@@ -546,7 +548,7 @@ namespace Secupay\Payment\Application\Controller
 					}
 					else
 					{
-						$aData['delivery_address'] = new stdClass();
+						$aData['delivery_address'] = new \stdClass();
 						$aData['delivery_address']->firstname = $aData['firstname'];
 						$aData['delivery_address']->lastname = $aData['lastname'];
 						$aData['delivery_address']->street = $aData['street'];
@@ -559,7 +561,7 @@ namespace Secupay\Payment\Application\Controller
 
 					if($sOrderId)
 					{
-						$aData['userfields'] = new stdClass();
+						$aData['userfields'] = new \stdClass();
 						$aData['userfields']->oxorder_id = $sOrderId;
 					}
 
@@ -575,7 +577,7 @@ namespace Secupay\Payment\Application\Controller
 						$sHash = $oResponse->getHash();
 
 						/* Eintrag in secupay eigene Log Tabelle im Administrationsbereich des Modul */
-						Table::createTransactionEntry($aData, json_encode(Codec::ensureUTF8($oResponse), JSON_UNESCAPED_UNICODE), $sHash, $sPaymentId, $sOrderId, $aData['amount'], $oResponse->getIFrameURL(), $this->isLoggingEnabled());
+						Table::createTransactionEntry(json_encode($aData, JSON_UNESCAPED_UNICODE), json_encode(Codec::ensureUTF8($oResponse), JSON_UNESCAPED_UNICODE), $sHash, $sPaymentId, $sOrderId, $aData['amount'], $oResponse->getIFrameURL(), $this->isLoggingEnabled());
 						Table::createStatusEntry($sHash, '', 'erstellt', $this->isLoggingEnabled());
 
 						$oSession->setVariable('secupay_iframe_url', $oResponse->getIFrameURL());
@@ -588,7 +590,7 @@ namespace Secupay\Payment\Application\Controller
 					{
 						$sHash = $oResponse->getHash();
 
-						Table::createTransactionEntry($aData, json_encode(Codec::ensureUTF8($oResponse), JSON_UNESCAPED_UNICODE), $sHash, $sPaymentId, $sOrderId, $aData['amount'], $oResponse->getIFrameURL(), $this->isLoggingEnabled());
+						Table::createTransactionEntry(json_encode($aData, JSON_UNESCAPED_UNICODE), json_encode(Codec::ensureUTF8($oResponse), JSON_UNESCAPED_UNICODE), $sHash, $sPaymentId, $sOrderId, $aData['amount'], $oResponse->getIFrameURL(), $this->isLoggingEnabled());
 						Table::createStatusEntry($sHash, $oResponse->getErrorMessage($this->isLoggingEnabled()), $oResponse->getStatus($this->isLoggingEnabled()), $this->isLoggingEnabled());
 
 						Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, createSecupayTransaction', 'Anfrage hash '.$sHash.' fehlgeschlagen');

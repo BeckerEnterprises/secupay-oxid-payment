@@ -17,6 +17,7 @@
 
 namespace Secupay\Payment\Application\Controller\Admin
 {
+	use \Secupay\Payment\Core\Logger;
 	use \OxidEsales\Eshop\Application\Controller\Admin\AdminDetailsController;
 
 	class SecupayLogin extends AdminDetailsController

@@ -20,6 +20,7 @@ namespace Secupay\Payment\Application\Controller
 	use \Secupay\Payment\Core\SecupayApi;
 	use \Secupay\Payment\Core\PaymentTypes;
 	use \Secupay\Payment\Core\Table;
+	use \Secupay\Payment\Core\Logger;
 
 	use \OxidEsales\Eshop\Core\DatabaseProvider;
 	use \OxidEsales\Eshop\Core\Field;

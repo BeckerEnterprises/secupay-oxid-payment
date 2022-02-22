@@ -45,7 +45,7 @@ namespace Secupay\Payment\Core
 		{
 			if($this->getStatus() != 'ok')
 			{
-				Logger::log($blLoggingEnabled, 'secupay_api_response status: ', $this->getStatus())
+				Logger::log($blLoggingEnabled, 'secupay_api_response status: ', $this->getStatus());
 				return false;
 			}
 

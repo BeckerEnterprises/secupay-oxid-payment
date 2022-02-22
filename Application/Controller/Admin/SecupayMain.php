@@ -18,6 +18,7 @@
 namespace Secupay\Payment\Application\Controller\Admin
 {
 	use \Secupay\Payment\Core\SecupayApi;
+	use \Secupay\Payment\Core\Logger;
 
 	use \OxidEsales\Facts\Facts;
 

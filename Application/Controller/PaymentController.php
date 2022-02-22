@@ -18,6 +18,7 @@
 namespace Secupay\Payment\Application\Controller
 {
 	use \Secupay\Payment\Core\PaymentTypes;
+	use \Secupay\Payment\Core\Logger;
 
 	use \OxidEsales\Eshop\Core\DatabaseProvider;
 	use \OxidEsales\Eshop\Core\Registry;
@@ -95,7 +96,7 @@ namespace Secupay\Payment\Application\Controller
 			return $this->aSecupayPaymentTypes;
 		}
 
-		public function isSecupayPaymentType(string $sPaymentId) : true
+		public function isSecupayPaymentType(string $sPaymentId) : bool
 		{
 			$aActivePaymentTypes = $this->getSecupayPaymentTypes();
 			foreach($aActivePaymentTypes as $oPaymentType)
