@@ -30,11 +30,11 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function init()
 		{
-			$this->setLoggingEnabled(boolval($this->getConfig()->getConfigParam('secupay_blDebug_log')));
+			$this->setLoggingEnabled(boolval($this->getConfig()->getConfigParam('blSecupayPaymentDebug')));
 
 			parent::init();
 
-			$sApiKey = $this->getConfig()->getConfigParam('secupay_api_key');
+			$sApiKey = $this->getConfig()->getConfigParam('sSecupayPaymentApiKey');
 
 			$oDB = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
 			foreach($oDB->getAll('SELECT * FROM oxsecupay WHERE updated = 0 AND `hash` <> \'\';') as $row)
@@ -46,7 +46,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 			$sReturn = parent::render();
 
 			$oDB = DatabaseProvider::getDb(DatabaseProvider::FETCH_MODE_ASSOC);
-			$sApiKey = $this->getConfig()->getConfigParam('secupay_api_key');
+			$sApiKey = $this->getConfig()->getConfigParam('sSecupayPaymentApiKey');
 
 			$aTaList = [];
 			$sQuery = 'SELECT * FROM oxsecupay s LEFT JOIN oxsecupay_status ss ON ss.oxsecupay_status_id = s.oxsecupay_status_id LEFT JOIN oxsecupay_iframe_url iu ON iu.iframe_url_id = s.iframe_url_id WHERE req_data IS NOT NULL ORDER BY s.`rank`, s.created DESC;';

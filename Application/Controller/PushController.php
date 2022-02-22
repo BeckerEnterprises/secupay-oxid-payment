@@ -35,7 +35,7 @@ namespace Secupay\Payment\Application\Controller
 		public function render()
 		{
 			$sResponse = '';
-			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('secupay_blDebug_log')));
+			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('blSecupayPaymentDebug')));
 
 			try
 			{
@@ -219,7 +219,7 @@ namespace Secupay\Payment\Application\Controller
 				return false;
 			}
 
-			if($aParameters['api_key'] != $oConfig->getConfigParam('secupay_api_key'))
+			if($aParameters['api_key'] != $oConfig->getConfigParam('sSecupayPaymentApiKey'))
 			{
 				Logger::log($this->isLoggingEnabled(), 'secupay_push, validateRequestParameters', 'api_key missmatch');
 				return false;

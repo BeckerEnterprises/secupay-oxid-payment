@@ -31,19 +31,19 @@ namespace Secupay\Payment\Application\Controller
 
 		public function init()
 		{
-			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('secupay_blDebug_log')));
+			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('blSecupayPaymentDebug')));
 			parent::init();
 		}
 
 		/*
 		public function isKK()
 		{
-			return Registry::getConfig()->getConfigParam('secupay_creditcard_active');
+			return Registry::getConfig()->getConfigParam('blSecupayPaymentCreditCardActive');
 		}
 
 		public function isLS()
 		{
-			return Registry::getConfig()->getConfigParam('secupay_debit_active');
+			return Registry::getConfig()->getConfigParam('blSecupayPaymentDebitActive');
 		}
 		*/
 

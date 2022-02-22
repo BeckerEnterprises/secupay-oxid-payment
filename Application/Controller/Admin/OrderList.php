@@ -29,7 +29,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 		 */
 		public function render()
 		{
-			$blLoggingEnabled = $this->getConfig()->getConfigParam('secupay_blDebug_log');
+			$blLoggingEnabled = $this->getConfig()->getConfigParam('blSecupayPaymentDebug');
 			Logger::log($blLoggingEnabled, 'secupay OrderList, render');
 			$this->secupayAutoSend();
 
@@ -38,10 +38,10 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function secupayAutoSend()
 		{
-			$blLoggingEnabled = $this->getConfig()->getConfigParam('secupay_blDebug_log');
-			$blActiveAutoSend = $this->getConfig()->getConfigParam('secupay_invoice_autosend');
-			$blActiveTrackingAutoSend = $this->getConfig()->getConfigParam('secupay_tracking_autosend');
-			$blActiveAutoInvoice = $this->getConfig()->getConfigParam('secupay_invoice_autoinvoice');
+			$blLoggingEnabled = $this->getConfig()->getConfigParam('blSecupayPaymentDebug');
+			$blActiveAutoSend = $this->getConfig()->getConfigParam('iSecupayPaymentInvoiceAutoSend');
+			$blActiveTrackingAutoSend = $this->getConfig()->getConfigParam('iSecupayPaymentInvoiceTAutoSend');
+			$blActiveAutoInvoice = $this->getConfig()->getConfigParam('iSecupayPaymentInvoiceAutoInvoice');
 			Logger::log($blLoggingEnabled, 'secupay OrderList, secupayAutoSend', 'active auto send: '.($blActiveAutoSend ? 'true' : 'false'), 'active tracking auto send: '.($blActiveTrackingAutoSend ? 'true' : 'false'), 'active auto invoice: '.($blActiveAutoInvoice ? 'true' : 'false'));
 
 			if($blActiveAutoSend || $blActiveTrackingAutoSend)
@@ -50,7 +50,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 				foreach($oDB->getAll('SELECT o.OXORDERNR, o.OXSENDDATE, sp.`hash`, o.OXBILLNR, o.OXTRACKCODE, o.OXDELTYPE, sp.payment_method FROM '.getViewName('oxorder').' o INNER JOIN oxsecupay sp ON sp.oxordernr = o.OXORDERNR AND sp.oxorder_id = o.OXID WHERE sp.v_send IS NULL AND o.OXSENDDATE IS NOT NULL AND o.OXSENDDATE <> \'0000-00-00 00:00:00\' AND o.OXTRACKCODE IS NOT NULL;') as $row)
 				{
 					$aData = [
-						'apikey' => $this->getConfig()->getConfigParam('secupay_api_key'),
+						'apikey' => $this->getConfig()->getConfigParam('sSecupayPaymentApiKey'),
 						'hash' => $row['hash'],
 						'invoice_number' => $blActiveAutoInvoice ? $row['OXBILLNR'] : $row['OXORDERNR'],
 						'tracking' => [

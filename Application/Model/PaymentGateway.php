@@ -32,7 +32,7 @@ namespace Secupay\Payment\Application\Model
 		*/
 		public function executePayment($dAmount, &$oOrder)
 		{
-			$blLoggingEnabled = $this->getConfig()->getConfigParam('secupay_blDebug_log');
+			$blLoggingEnabled = $this->getConfig()->getConfigParam('blSecupayPaymentDebug');
 
 			if(($sPaymentId = $this->getSession()->getBasket()->getPaymentId()) && ($oPaymentType = PaymentTypes::getPaymentType($sPaymentId)))
 			{

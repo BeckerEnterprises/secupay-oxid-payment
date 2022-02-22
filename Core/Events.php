@@ -21,6 +21,9 @@ namespace Secupay\Payment\Core
 	use \OxidEsales\Eshop\Core\DatabaseProvider;
 	use \OxidEsales\Eshop\Core\DbMetaDataHandler;
 
+	use \OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+	use \OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Bridge\ModuleSettingBridgeInterface;
+
 	class Events
 	{
 		private static $loggingEnabled = true;
@@ -99,47 +102,48 @@ namespace Secupay\Payment\Core
 
 			foreach($aPaymentTypes as $oPaymentType)
 			{
-				if(intval($oDB->getOne('SELECT COUNT(*) FROM '.getViewName('oxpayments').' WHERE OXID = ?;', [ $oPaymentType->getId() ])) == 0)
+				if(intval($oDB->getOne('SELECT COUNT(*) FROM oxpayments WHERE OXID = ?;', [ $oPaymentType->getId() ])) == 0)
 				{
 					if(!$oPaymentType->getDescription())
 					{
-						Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'description missing for '.$oPaymentType->getType());
+						Logger::log(self::$loggingEnabled, 'description missing for '.$oPaymentType->getType());
 						continue;
 					}
 
+					$none = $oDB->quote('');
 					$aData = [
 						'OXID' => $oDB->quote($oPaymentType->getId()),
 						'OXACTIVE' => 1,
 						'OXDESC' => $oDB->quote($oPaymentType->getDescription()),
 						'OXADDSUM' => 0,
-						'OXADDSUMTYPE' => 'abs',
+						'OXADDSUMTYPE' => $oDB->quote('abs'),
 						'OXFROMBONI' => 0,
 						'OXFROMAMOUNT' => 0,
 						'OXTOAMOUNT' => 1000000,
-						'OXVALDESC' => '',
+						'OXVALDESC' => $none,
 						'OXCHECKED' => 0,
 						'OXDESC_1' => $oDB->quote($oPaymentType->getDescription()),
-						'OXVALDESC_1' => '',
-						'OXDESC_2' => '',
-						'OXVALDESC_2' => '',
-						'OXDESC_3' => '',
-						'OXVALDESC_3' => '',
-						'OXLONGDESC' => '',
-						'OXLONGDESC_1' => '',
-						'OXLONGDESC_2' => '',
-						'OXLONGDESC_3' => '',
+						'OXVALDESC_1' => $none,
+						'OXDESC_2' => $none,
+						'OXVALDESC_2' => $none,
+						'OXDESC_3' => $none,
+						'OXVALDESC_3' => $none,
+						'OXLONGDESC' => $none,
+						'OXLONGDESC_1' => $none,
+						'OXLONGDESC_2' => $none,
+						'OXLONGDESC_3' => $none,
 						'OXSORT' => 0,
 					];
 
-					$sQuery = 'INSERT INTO '.getViewName('oxpayments').'(`'.implode('`,`', array_keys($aData)).'`) VALUES('.implode(',', $aData).');';
-					Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'db create '.$oPaymentType->getType(), $sQuery);
+					$sQuery = 'INSERT INTO oxpayments(`'.implode('`,`', array_keys($aData)).'`) VALUES('.implode(',', $aData).');';
+					Logger::log(self::$loggingEnabled, 'db create '.$oPaymentType->getType(), $sQuery);
 					$oDB->execute($sQuery);
 				}
 
 				if(in_array($oPaymentType->getType(), $aActivePaymentTypes))
 				{
-					$sQuery = 'UPDATE '.getViewName('oxpayments').' SET OXACTIVE = 1 WHERE OXID = '.$oDB->quote($oPaymentType->getId()).';';
-					Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'db activate '.$oPaymentType->getType(), $sQuery);
+					$sQuery = 'UPDATE oxpayments SET OXACTIVE = 1 WHERE OXID = '.$oDB->quote($oPaymentType->getId()).';';
+					Logger::log(self::$loggingEnabled, 'db activate '.$oPaymentType->getType(), $sQuery);
 					$oDB->execute($sQuery);
 				}
 			}
@@ -154,7 +158,7 @@ namespace Secupay\Payment\Core
 						if(!self::columnExists($table, $column))
 						{
 							$sQuery = 'ALTER TABLE `'.$table.'` ADD COLUMN `'.$column.'` '.$column_definition.';';
-							Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'adding missing column '.$table.'.'.$column, $sQuery);
+							Logger::log(self::$loggingEnabled, 'adding missing column '.$table.'.'.$column, $sQuery);
 							$oDB->execute($sQuery);
 						}
 					}
@@ -178,35 +182,72 @@ namespace Secupay\Payment\Core
 
 					$sQuery .= ';';
 
-					Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'creating table '.$table, $sQuery);
+					Logger::log(self::$loggingEnabled, 'creating table '.$table, $sQuery);
 					$oDB->execute($sQuery);
 				}
 			}
 
 			// update views
-			Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'update views');
+			Logger::log(self::$loggingEnabled, 'update views');
 			oxNew(DbMetaDataHandler::class)->updateViews();
 
-			Logger::log(self::$loggingEnabled, 'secupay_events, onActivate', 'done');
+			Logger::log(self::$loggingEnabled, 'secupay_events, onActivate done');
 		}
 
 		public static function onDeactivate()
 		{
 			Logger::log(self::$loggingEnabled, 'secupay_events, onDeactivate');
 
+			$oDB = DatabaseProvider::getDb();
+
+			$moduleSettingBridge = ContainerFactory::getInstance()->getContainer()->get(ModuleSettingBridgeInterface::class);
+			$clearSettings = $moduleSettingBridge->get('blSecupayPaymentDeactivateClearSettings', 'Secupay_Payment');
+			$removePaymentMethods = $moduleSettingBridge->get('blSecupayPaymentDeactivateRemovePaymentMethods', 'Secupay_Payment');
+
+			if($clearSettings)
+			{
+				Logger::log(self::$loggingEnabled, 'clear settings');
+				$moduleSettingBridge->save('iSecupayPaymentMode', '0', 'Secupay_Payment');
+				$moduleSettingBridge->save('sSecupayPaymentApiKey', '', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentDebug', 'true', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentExperience', '1', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentInvoiceTAutoSend', '1', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentDebitActive', 'true', 'Secupay_Payment');
+				$moduleSettingBridge->save('sSecupayPaymentDebitShopname', '', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentDebitDeliveryAddress', '0', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentCreditCardActive', 'true', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentCreditCardDeliveryAddress', '0', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentPrePayActive', 'true', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentInvoiceActive', 'true', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentInvoiceDeliveryAddress', '0', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentInvoiceAutoInvoice', '1', 'Secupay_Payment');
+				$moduleSettingBridge->save('iSecupayPaymentInvoiceAutoSend', '1', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentDeactivateClearSettings', 'false', 'Secupay_Payment');
+				$moduleSettingBridge->save('blSecupayPaymentDeactivateRemovePaymentMethods', 'false', 'Secupay_Payment');
+			}
+
 			$aPaymentTypes = PaymentTypes::getPaymentTypes();
 			foreach($aPaymentTypes as $oPaymentType)
 			{
-				$sQuery = 'UPDATE '.getViewName('oxpayments').' SET OXACTIVE = 0 WHERE OXID = '.$oDB->quote($oPaymentType->getId()).';';
-				Logger::log(self::$loggingEnabled, 'secupay_events, onDeactivate', 'db deactivate '.$oPaymentType->getType(), $sQuery);
-				$oDB->execute($sQuery);
+				if($removePaymentMethods)
+				{
+					$sQuery = 'DELETE FROM oxpayments WHERE OXID = '.$oDB->quote($oPaymentType->getId()).';';
+					Logger::log(self::$loggingEnabled, 'db remove '.$oPaymentType->getType(), $sQuery);
+					$oDB->execute($sQuery);
+				}
+				else
+				{
+					$sQuery = 'UPDATE oxpayments SET OXACTIVE = 0 WHERE OXID = '.$oDB->quote($oPaymentType->getId()).';';
+					Logger::log(self::$loggingEnabled, 'db disable '.$oPaymentType->getType(), $sQuery);
+					$oDB->execute($sQuery);
+				}
 			}
 
 			// update views
-			Logger::log(self::$loggingEnabled, 'secupay_events, onDeactivate', 'update views');
+			Logger::log(self::$loggingEnabled, 'update views');
 			oxNew(DbMetaDataHandler::class)->updateViews();
 
-			Logger::log(self::$loggingEnabled, 'secupay_events, onDeactivate', 'done');
+			Logger::log(self::$loggingEnabled, 'secupay_events, onDeactivate done');
 		}
 
 		private static function tableExists($table)

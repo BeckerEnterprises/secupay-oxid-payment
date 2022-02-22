@@ -31,28 +31,29 @@ namespace Secupay\Payment\Core
 			$oDebit = oxNew(PaymentType::class);
 			$oDebit->setId('secupay_debit');
 			$oDebit->setType('debit');
-			$oDebit->setOptionName('secupay_debit_active');
+			$oDebit->setOptionName('blSecupayPaymentDebitActive');
 			$oDebit->setDescription('secupay.Lastschrift');
 			$oDebit->setShortDescription('Lastschrift');
 			$oDebit->setOnAcceptedSetOrderPaid(true);
 			$oDebit->setCanCheckDeliveryAdress(true);
-			$oDebit->setDeliveryAdressOptionName('secupay_debit_delivery_adress');
+			$oDebit->setDeliveryAdressOptionName('iSecupayPaymentDebitDeliveryAddress');
 			self::$paymentTypes[] = $oDebit;
 
 			$oCreditCard = oxNew(PaymentType::class);
 			$oCreditCard->setId('secupay_creditcard');
 			$oCreditCard->setType('creditcard');
-			$oCreditCard->setOptionName('secupay_creditcard_active');
+			$oCreditCard->setOptionName('blSecupayPaymentCreditCardActive');
 			$oCreditCard->setDescription('secupay.Kreditkarte');
 			$oCreditCard->setShortDescription('Kreditkarte');
 			$oCreditCard->setOnAcceptedSetOrderPaid(true);
 			$oCreditCard->setCanCheckDeliveryAdress(false);
+			$oDebit->setDeliveryAdressOptionName('iSecupayPaymentCreditCardDeliveryAddress');
 			self::$paymentTypes[] = $oCreditCard;
 
 			$oPrePay = oxNew(PaymentType::class);
 			$oPrePay->setId('secupay_prepay');
 			$oPrePay->setType('prepay');
-			$oPrePay->setOptionName('secupay_prepay_active');
+			$oPrePay->setOptionName('blSecupayPaymentPrePayActive');
 			$oPrePay->setDescription('secupay.Vorkasse');
 			$oPrePay->setShortDescription('Vorkasse');
 			$oPrePay->setOnAcceptedSetOrderPaid(true);
@@ -61,19 +62,19 @@ namespace Secupay\Payment\Core
 			$oDebit = oxNew(PaymentType::class);
 			$oDebit->setId('secupay_invoice');
 			$oDebit->setType('invoice');
-			$oDebit->setOptionName('secupay_invoice_active');
+			$oDebit->setOptionName('blSecupayPaymentInvoiceActive');
 			$oDebit->setDescription('secupay.Rechnungskauf');
 			$oDebit->setShortDescription('Rechnungskauf');
 			$oDebit->setOnAcceptedSetOrderPaid(true);
 			$oDebit->setCanCheckDeliveryAdress(true);
-			$oDebit->setDeliveryAdressOptionName('secupay_invoice_delivery_adress');
+			$oDebit->setDeliveryAdressOptionName('iSecupayPaymentInvoiceDeliveryAddress');
 			self::$paymentTypes[] = $oDebit;
 		}
 
 		public static function requestAvailablePaymenttypes($blLoggingEnabled = false)
 		{
 			$aActivePaymentTypes = [];
-			$apikey = Registry::getConfig()->getConfigParam('secupay_api_key');
+			$apikey = Registry::getConfig()->getConfigParam('sSecupayPaymentApiKey');
 
 			if(isset($apikey))
 			{

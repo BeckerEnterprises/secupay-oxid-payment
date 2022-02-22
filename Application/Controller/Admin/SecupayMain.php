@@ -45,7 +45,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function getApiKey()
 		{
-			return $this->getConfig()->getConfigParam('secupay_api_key');
+			return $this->getConfig()->getConfigParam('sSecupayPaymentApiKey');
 		}
 
 		public function getShopVersion()

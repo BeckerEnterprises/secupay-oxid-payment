@@ -49,7 +49,7 @@ namespace Secupay\Payment\Application\Controller
 
 		public function __construct()
 		{
-			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('secupay_blDebug_log')));
+			$this->setLoggingEnabled(boolval(Registry::getConfig()->getConfigParam('blSecupayPaymentDebug')));
 		}
 
 		/**
@@ -375,7 +375,7 @@ namespace Secupay\Payment\Application\Controller
 
 			if($sHash)
 			{
-				$aRequestData = [ 'apikey' => $this->getConfig()->getConfigParam('secupay_api_key'), 'hash' => $sHash, 'apiversion' => SecupayApi::getApiVersion() ];
+				$aRequestData = [ 'apikey' => $this->getConfig()->getConfigParam('sSecupayPaymentApiKey'), 'hash' => $sHash, 'apiversion' => SecupayApi::getApiVersion() ];
 
 				$oApi = new SecupayApi($aRequestData, 'status/'.$sHash);
 				if($oResponse = $oApi->request())
@@ -456,7 +456,7 @@ namespace Secupay\Payment\Application\Controller
 					catch(LanguageException $oEx) { } // is thrown in debug mode and has to be caught here, as smarty hangs otherwise!
 
 					$aData = [
-						'apikey' => $oConfig->getConfigParam('secupay_api_key'),
+						'apikey' => $oConfig->getConfigParam('sSecupayPaymentApiKey'),
 						'apiversion' => SecupayApi::getApiVersion(),
 						'shop' => 'OXID '.oxNew(Facts::class)->getEdition(),
 						'shopversion' => ShopVersion::getVersion(),
@@ -488,7 +488,7 @@ namespace Secupay\Payment\Application\Controller
 						'purpose' => $this->getSecupayPurpose(),
 					];
 
-					if(!$oConfig->getConfigParam('secupay_blMode'))
+					if(!$oConfig->getConfigParam('iSecupayPaymentMode'))
 						$aData['demo'] = 1;
 
 					if(($sLangAbbr = $oLang->getLanguageAbbr($oLang->getTplLanguage())) && ($sLangAbbr === 'en'))
@@ -498,7 +498,7 @@ namespace Secupay\Payment\Application\Controller
 
 					$iPositiv = 0;
 					$iNegativ = 0;
-					if($oConfig->getConfigParam('secupay_experience'))
+					if($oConfig->getConfigParam('iSecupayPaymentExperience'))
 					{
 						$oxiduser=$oUser->oxuser__oxid->value;
 						$respositiv=$oDB->getOne("SELECT count(oxorder.OXUSERID) FROM oxorder WHERE oxorder.OXPAID != '0000-00-00 00:00:00' AND oxorder.OXTRACKCODE IS NOT NULL AND oxorder.OXUSERID ='$oxiduser'");
@@ -613,7 +613,7 @@ namespace Secupay\Payment\Application\Controller
 		protected function getSecupayPurpose() : ?string
 		{
 			$sShop = $this->getConfig()->getActiveShop()->oxshops__oxname->getRawValue();
-			$sCustomName = $this->getConfig()->getConfigParam('secupay_shopname_ls');
+			$sCustomName = $this->getConfig()->getConfigParam('sSecupayPaymentDebitShopname');
 
 			if(strlen($sCustomName) > 2)
 				$sShop = $sCustomName;
@@ -630,7 +630,7 @@ namespace Secupay\Payment\Application\Controller
 			{
 				Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, cancelSecupayTransaction', 'hash: '.$sHash);
 
-				$aData = ['apikey' => $this->getConfig()->getConfigParam('secupay_api_key')];
+				$aData = ['apikey' => $this->getConfig()->getConfigParam('sSecupayPaymentApiKey')];
 
 				if($sComment)
 					$aData['comment'] = $sComment;
