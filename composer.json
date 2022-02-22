@@ -1,15 +1,37 @@
 {
-  "name": "secupay/secupay-oxid-payment",
-  "description": "The secupay module for Oxid 6",
-  "type": "oxideshop-module",
-  "keywords": ["oxid", "secupay", "payment"],
-  "homepage": "https://www.secupay.com/",
-  "license": [
-    "Apache-2.0"
-  ],
-  "extra": {
-    "oxideshop": {
-      "target-directory": "secupay"
+	"name": "secupay/secupay-oxid-payment",
+	"description": "The secupay module for Oxid 6",
+	"type": "oxideshop-module",
+	"keywords": ["oxid", "secupay", "payment"],
+	"homepage": "https://www.secupay.com/",
+	"authors": [
+		{
+			"name":  "secupay AG",
+			"homepage": "https://www.secupay.ag/",
+			"email": "info@secupay.ag",
+			"role": "Developer"
+		},
+		{
+			"name":  "Becker Enterprises",
+			"homepage": "https://becker.enterprises/",
+			"email": "info@becker.enterprises",
+			"role": "Developer"
+		}
+	],
+	"license": [
+		"Apache-2.0"
+	],
+	"extra": {
+		"oxideshop": {
+			"target-directory": "Secupay/Payment"
+		}
+	},
+    "require": {
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Secupay\\Payment\\": "../../../source/modules/Secupay/Payment"
+        }
     }
-  }
 }
