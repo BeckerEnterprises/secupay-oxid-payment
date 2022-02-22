@@ -89,8 +89,17 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 			$this->_aViewData['aTaList'] = $aTaList;
 			$this->_aViewData['sApiKey'] = $sApiKey;
-			$this->_aViewData['sRefundURL'] = $this->getConfig()->getShopHomeURL().'cl=clSecupayAjaxController&fnc=refund';
-			$this->_aViewData['sStatusURL'] = $this->getConfig()->getShopHomeURL().'cl=clSecupayAjaxController&fnc=status';
+
+			$url_params = '';
+			$oSession = $this->getSession();
+			if($oSession->isSidNeeded())
+				$url_params .= '&'.$oSession->getName().'='.$oSession->getId();
+
+			if($oSession->getId())
+				$url_params .= '&stoken='.$oSession->getSessionChallengeToken();
+
+			$this->_aViewData['sRefundURL'] = $this->getConfig()->getCurrentShopUrl().'index.php?cl=clSecupayAjaxController&fnc=refund'.$url_params;
+			$this->_aViewData['sStatusURL'] = $this->getConfig()->getCurrentShopUrl().'index.php?cl=clSecupayAjaxController&fnc=status'.$url_params;
 
 			return $sReturn;
 		}

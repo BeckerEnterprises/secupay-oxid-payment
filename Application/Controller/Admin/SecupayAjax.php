@@ -17,7 +17,11 @@
 
 namespace Secupay\Payment\Application\Controller\Admin
 {
+	use \Secupay\Payment\Core\SecupayApi;
+	use \Secupay\Payment\Core\Table;
 	use \Secupay\Payment\Core\Logger;
+
+	use \OxidEsales\Eshop\Core\Registry;
 	use \OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 
 	class SecupayAjax extends AdminController
@@ -36,6 +40,8 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function refund()
 		{
+			file_put_contents('/var/www/vhosts/mooshop.koenig-berger.com/httpdocs/source/log/sp_ajax.log', date('H:i:s').' refund '.PHP_EOL, FILE_APPEND);
+
 			$oLang = Registry::getLang();
 
 			$sApiKey = array_key_exists('apikey', $_POST) ? $_POST['apikey'] : null;
@@ -50,7 +56,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 				{
 					Table::createStatusEntry($sHash, 'refund: '.$sStatus, '');
 					$aOutput['status'] = $oData->status;
-					$aOutput['message'] = $aOutput['status'] == 'ok' ? $oLang->translateString('SECUPAY_AJAX_REFUND_OK') : $oLang->translateString('SECUPAY_AJAX_REFUND_FAILED');
+					$aOutput['message'] = $oLang->translateString('SECUPAY_AJAX_REFUND').$oData->status;
 					$aOutput['response'] = $oData;
 				}
 				else
@@ -64,6 +70,8 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function status()
 		{
+			file_put_contents('/var/www/vhosts/mooshop.koenig-berger.com/httpdocs/source/log/sp_ajax.log', date('H:i:s').' status '.PHP_EOL, FILE_APPEND);
+
 			$oLang = Registry::getLang();
 
 			$sApiKey = array_key_exists('apikey', $_POST) ? $_POST['apikey'] : null;
@@ -72,7 +80,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 			$aOutput = ['status' => 'error'];
 			if($sApiKey && $sHash)
 			{
-				$oApi = new SecupayApi(['apikey' => $sApiKey, 'hash' => $sHash], 'refund');
+				$oApi = new SecupayApi(['apikey' => $sApiKey, 'hash' => $sHash], 'status');
 				if(($oResponse = $oApi->request()) && $oResponse->checkResponse() && ($oData = $oResponse->getData()) && property_exists($oData, 'status') && ($sStatus = $oData->status))
 				{
 					if(property_exists($oData, 'trans_id') && ($sTransactionId = $oData->trans_id))
@@ -85,7 +93,7 @@ namespace Secupay\Payment\Application\Controller\Admin
 						Table::createStatusEntry($sHash, 'Status: '.$sPaymentStatus, $sStatusDescription);
 
 					$aOutput['status'] = $oData->status;
-					$aOutput['message'] = $aOutput['status'] == 'ok' ? $oLang->translateString('SECUPAY_AJAX_STATUS_OK') : $oLang->translateString('SECUPAY_AJAX_STATUS_FAILED');
+					$aOutput['message'] = $oLang->translateString('SECUPAY_AJAX_STATUS').$oData->status;
 					$aOutput['response'] = $oData;
 				}
 				else

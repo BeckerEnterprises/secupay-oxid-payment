@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-15"?>
 <OX>
 	<OXMENU id="NAVIGATION_ESHOPADMIN">
-		<MAINMENU id="mxshopsett">
+		<MAINMENU id="mxorders">
 			<SUBMENU id="mxSecupaySettings" cl="clSecupay" list="clSecupayList" rights="malladmin">
 				<TAB id="tbclSecupayMain" cl="clSecupayMain" />
 				<TAB id="tbclSecupayLogin" cl="clSecupayLogin" />

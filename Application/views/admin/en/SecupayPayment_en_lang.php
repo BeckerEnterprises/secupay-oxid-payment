@@ -79,4 +79,9 @@ $aLang = [
 	'SHOP_MODULE_GROUP_Settings_SecupayPayment_Deactivate'			=> 'Modul deactivation',
 	'SHOP_MODULE_blSecupayPaymentDeactivateClearSettings'			=> 'Remove all module settings when deactivating',
 	'SHOP_MODULE_blSecupayPaymentDeactivateRemovePaymentMethods'	=> 'Remove all secupay payment methods when deactivating',
+
+	'SECUPAY_AJAX_STATUS'											=> 'The payment status is: ',
+	'SECUPAY_AJAX_REFUND'											=> 'The refund status is: ',
+	'SECUPAY_AJAX_ERROR_REQUEST_FAILED'								=> 'The request via secupay was unsuccessful.',
+	'SECUPAY_AJAX_ERROR_PARAMS_MISSING'								=> 'An unexpected error has occurred.',
 ];
