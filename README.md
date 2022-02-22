@@ -4,5 +4,5 @@ Dieses Modul basiert auf dem ursprünglichen Modul von Secupay (https://github.c
 
 Vorraussetzungen:
 
-* OXID ab Version 6.0.0
+* OXID eShop ab Version 6
 * PHP ab Version 7.4

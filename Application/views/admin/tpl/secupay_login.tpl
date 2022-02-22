@@ -27,7 +27,7 @@
 	<input type="hidden" name="editlanguage" value="[{$editlanguage}]">
 </form>
 <div style="text-align:center;display:block;height:100%;width:100%;">
-	<iframe style="border:0px;display:block;height:100%;width:100%;" id="sp_iframe_id" name="sp_iframe" scrolling="auto" frameborder="0" marginheight="0px" marginwidth="0px" src="https://connect.secupay.ag/secupay.php"></iframe>
+	<iframe style="border:0px;display:block;height:100%;width:100%;" id="sp_iframe_id" name="sp_iframe" scrolling="auto" frameborder="0" marginheight="0px" marginwidth="0px" src="https://connect.secupay.ag/"></iframe>
 </div>
 
 [{include file="bottomnaviitem.tpl"}]
