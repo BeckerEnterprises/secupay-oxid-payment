@@ -74,6 +74,13 @@ $aModule = [
 			'constraints' => '0|1',
 		],
 		[
+			'group' => 'Settings_SecupayPayment_Main',
+			'name'  => 'iSecupayPaymentTheme',
+			'type'  => 'select',
+			'value' => '0',
+			'constraints' => '0|1',
+		],
+		[
 			'group' => 'Settings_SecupayPayment_Debit',
 			'name'  => 'blSecupayPaymentDebitActive',
 			'type'  => 'bool',

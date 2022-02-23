@@ -169,6 +169,15 @@ namespace Secupay\Payment\Application\Controller
 			return false;
 		}
 
+		public function getSecupayIconURL(string $sPaymentId) : ?string
+		{
+			$sIconURL = null;
+			if($this->isSecupayPaymentType($sPaymentId) && ($sURL = $this->getConfig()->getModuleUrl("Secupay_Payment", "out/pictures/".$sPaymentId.(Registry::getConfig()->getConfigParam('iSecupayPaymentTheme') == 1 ? '_white' : '').".png")))
+				$sIconURL = $sURL;
+
+			return $sIconURL;
+		}
+
 		protected function setLoggingEnabled(bool $blLoggingEnabled = false)
 		{
 			$this->blLoggingEnabled = $blLoggingEnabled;

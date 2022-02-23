@@ -18,7 +18,8 @@
 		<dt>
 			<input id="payment_[{$sPaymentID}]" type="radio" name="paymentid" value="[{$sPaymentID}]" [{if $oView->getCheckedPaymentId() == $paymentmethod->oxpayments__oxid->value}]checked[{/if}]>
 			<label for="payment_[{$sPaymentID}]"><b>[{$paymentmethod->oxpayments__oxdesc->value}]</b></label>
-			<img src='https://www.secupay.ag/sites/default/files/media/Icons/[{oxmultilang ident="SECUPAY_LANG"}]/[{$sPaymentID}].png'>
+			[{assign var="sIconURL" value=$oView->getSecupayIconURL($sPaymentID)}]
+			[{if $sIconURL}]<img src="[{$sIconURL}]" alt="[{$paymentmethod->oxpayments__oxdesc->value}]">[{/if}]
 		</dt>
 		<dd class="payment-option[{if $oView->getCheckedPaymentId() == $paymentmethod->oxpayments__oxid->value}] activePayment[{/if}]">
 			[{if $paymentmethod->getPrice()}]

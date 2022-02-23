@@ -44,6 +44,9 @@ $aLang = [
 	'SHOP_MODULE_iSecupayPaymentInvoiceTAutoSend'					=> 'Automatic transmission of tracking information.',
 	'SHOP_MODULE_iSecupayPaymentInvoiceTAutoSend_0'					=> 'no',
 	'SHOP_MODULE_iSecupayPaymentInvoiceTAutoSend_1'					=> 'yes',
+	'SHOP_MODULE_iSecupayPaymentTheme'								=> 'Font color of the payment icons',
+	'SHOP_MODULE_iSecupayPaymentTheme_0'							=> 'dark',
+	'SHOP_MODULE_iSecupayPaymentTheme_1'							=> 'light',
 
 	'SHOP_MODULE_GROUP_Settings_SecupayPayment_Debit'				=> 'Direct debit',
 	'SHOP_MODULE_blSecupayPaymentDebitActive'						=> 'Direct debit active',
