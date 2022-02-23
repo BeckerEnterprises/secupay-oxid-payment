@@ -35,7 +35,7 @@ $aModule = [
 		'en' => 'secupay safe online payments',
 	],
 	'thumbnail' => 'out/pictures/secupay-logo.png',
-	'version' => '3.0.4',
+	'version' => '3.0.5',
 	'author' => 'secupay AG<br><small>Becker Enterprises [info@becker.enterprises] (OXID 6 Migration)</small>',
 	'url' => 'https://www.secupay.ag/',
 	'email' => 'info@secupay.ag',
