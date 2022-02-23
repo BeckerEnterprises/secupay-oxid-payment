@@ -50,30 +50,45 @@ namespace Secupay\Payment\Application\Controller
 					{
 						$oOrder = $this->getOrder();
 
-						if($aParameters['payment_status'] == 'accepted' && $oOrder->oxorder__oxpaid->value == '0000-00-00 00:00:00')
+						if($aParameters['payment_status'] == 'accepted')
 						{
 							$this->updateTransaction();
 							if(isset($oOrder) && $oOrder)
 							{
-								$oPaymentType = PaymentTypes::getPaymentTypeByType($oOrder->oxorder__oxpaymenttype->value);
-								Logger::log($this->isLoggingEnabled(), 'secupay_push, render payment_type: ', $oPaymentType);
-
-								if($oPaymentType)
+								if($oOrder->oxorder__oxpaid->value == '0000-00-00 00:00:00')
 								{
-									$this->setOrderAccepted($oOrder);
+									$oPaymentType = PaymentTypes::getPaymentTypeByType($oOrder->oxorder__oxpaymenttype->value);
+									Logger::log($this->isLoggingEnabled(), 'secupay_push, render payment_type: ', $oPaymentType);
 
-									if($oPaymentType->isOnAcceptedSetOrderPaid())
-										$this->setOrderPaid($oOrder);
+									if($oPaymentType)
+									{
+										$this->setOrderAccepted($oOrder);
 
-									$sResponse = 'ack=Approved';
+										if($oPaymentType->isOnAcceptedSetOrderPaid())
+											$this->setOrderPaid($oOrder);
+
+										$sResponse = 'ack=Approved';
+										Logger::log($this->isLoggingEnabled(), 'secupay_push, render status: Approved');
+									}
+									else
+									{
+										$sResponse = 'ack=Disapproved&error=wrong+payment+type';
+										Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: wrong payment type '.$oOrder->oxorder__oxpaymenttype->value);
+									}
 								}
 								else
-									$sResponse = 'ack=Disapproved&error=wrong+payment+type';
+								{
+									$sResponse = 'ack=Approved';
+									Logger::log($this->isLoggingEnabled(), 'secupay_push, render status: Approved');
+								}
 							}
 							else
+							{
 								$sResponse = 'ack=Disapproved&error=no+matching+order+found+for+hash';
+								Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: no matching order found for hash '.$aParameters['hash']);
+							}
 						}
-						else if(in_array($aParameters['payment_status'], ['denied', 'issue', 'void', 'authorized']))
+						else if(in_array($aParameters['payment_status'], ['denied', 'issue', 'void', 'authorized', 'pending', 'scored']))
 						{
 							$this->updateTransaction($aParameters['payment_status']);
 
@@ -83,33 +98,37 @@ namespace Secupay\Payment\Application\Controller
 									$this->setOrderError($oOrder);
 
 								$sResponse = 'ack=Approved';
+								Logger::log($this->isLoggingEnabled(), 'secupay_push, render status: Approved');
 							}
 							else
+							{
 								$sResponse = 'ack=Disapproved&error=no+matching+order+found+for+hash';
+								Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: no matching order found for hash '.$aParameters['hash']);
+							}
 						}
 						else
 						{
-							Logger::log($this->isLoggingEnabled(), 'secupay_push, render unsupported payment_status: '.$aParameters['payment_status']);
 							$sResponse = 'ack=Disapproved&error=payment_status+not+supported';
+							Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: payment_status not supported '.$aParameters['payment_status']);
 						}
 					}
 					else
 					{
-						Logger::log($this->isLoggingEnabled(), 'secupay_push, render paramter validation failed');
 						$sResponse = 'ack=Disapproved&error=request+invalid+data';
+						Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: request invalid data');
 					}
 				}
 				else
 				{
-					Logger::log($this->isLoggingEnabled(), 'secupay_push, render host validation failed'.(array_key_exists('host', $aParameters) ? ' for: '.$aParameters['host']['host'] : ''));
 					$sResponse = 'ack=Disapproved&error=request+invalid';
+					Logger::log($this->isLoggingEnabled(), 'secupay_push, render error: host validation failed'.(array_key_exists('host', $aParameters) ? ' for: '.$aParameters['host']['host'] : ''));
 				}
 				echo $sResponse.'&'.http_build_query($_POST);
 			}
 			catch(\Exception $e)
 			{
-				Logger::log($this->isLoggingEnabled(), 'secupay_push, render Exception: '.$e->getMessage(), $e->getTraceAsString());
 				echo 'ack=Disapproved&error=unexpected+error&'.http_build_query($_POST);
+				Logger::log($this->isLoggingEnabled(), 'secupay_push, render Exception: '.$e->getMessage(), $e->getTraceAsString());
 			}
 			// prevent Smarty error
 			die();
