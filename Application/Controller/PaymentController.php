@@ -172,7 +172,7 @@ namespace Secupay\Payment\Application\Controller
 		public function getSecupayIconURL(string $sPaymentId) : ?string
 		{
 			$sIconURL = null;
-			if($this->isSecupayPaymentType($sPaymentId) && ($sURL = $this->getConfig()->getModuleUrl("Secupay_Payment", "out/pictures/".$sPaymentId.(Registry::getConfig()->getConfigParam('iSecupayPaymentTheme') == 1 ? '_white' : '').".png")))
+			if($this->isSecupayPaymentType($sPaymentId) && ($sURL = $this->getViewConfig()->getModuleUrl("Secupay_Payment", "out/pictures/".$sPaymentId.(Registry::getConfig()->getConfigParam('iSecupayPaymentTheme') == 1 ? '_white' : '').".png")))
 				$sIconURL = $sURL;
 
 			return $sIconURL;
