@@ -395,15 +395,18 @@ namespace Secupay\Payment\Application\Controller
 									$blStatusOK = in_array($oResponseData->status, ['accepted', 'authorized', 'scored']);
 									$blPrepay = ($sPaymentId = $this->getPayment()->getId()) && ($oPaymentType = PaymentTypes::getPaymentType($sPaymentId)) && ($oPaymentType->getType() == 'prepay');
 
-									if(($blStatusOK || $blPrepay) && ($iAmountReceived == $iAmountBasket))
+									if($blStatusOK || $blPrepay)
 									{
+										if($iAmountReceived == $iAmountBasket)
+											Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, validateSecupayTransaction failure!', 'Amount received does not match basket amount!', 'Adding Order anyway.', 'hash: '.$sHash, 'ammount received: '.$iAmountReceived, 'ammount basket: '.$iAmountBasket);
+
 										if(property_exists($oResponseData, 'trans_id') && $oResponseData->trans_id)
-											Table::setTransactionId($sHash, $oResponseData->trans_id, $this->isLoggingEnabled());
+										Table::setTransactionId($sHash, $oResponseData->trans_id, $this->isLoggingEnabled());
 
 										return true;
 									}
 									else
-										Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, validateSecupayTransaction failure!', 'hash: '.$sHash, 'status: '.$oResponseData->status, 'prepay: '.($blPrepay ? 'true' : 'false'), 'ammount received: '.$iAmountReceived, 'ammount basket: '.$iAmountBasket);
+										Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, validateSecupayTransaction failure!', 'hash: '.$sHash, 'status: '.$oResponseData->status, 'prepay: '.($blPrepay ? 'true' : 'false'));
 								}
 								else
 									Logger::log($this->isLoggingEnabled(), 'secupay_order_controller, validateSecupayTransaction failure!', 'missing ammount in response: ', $oResponseData, 'hash: '.$sHash);
