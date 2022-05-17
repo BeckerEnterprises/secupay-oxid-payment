@@ -40,8 +40,6 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function refund()
 		{
-			file_put_contents('/var/www/vhosts/mooshop.koenig-berger.com/httpdocs/source/log/sp_ajax.log', date('H:i:s').' refund '.PHP_EOL, FILE_APPEND);
-
 			$oLang = Registry::getLang();
 
 			$sApiKey = array_key_exists('apikey', $_POST) ? $_POST['apikey'] : null;
@@ -70,8 +68,6 @@ namespace Secupay\Payment\Application\Controller\Admin
 
 		public function status()
 		{
-			file_put_contents('/var/www/vhosts/mooshop.koenig-berger.com/httpdocs/source/log/sp_ajax.log', date('H:i:s').' status '.PHP_EOL, FILE_APPEND);
-
 			$oLang = Registry::getLang();
 
 			$sApiKey = array_key_exists('apikey', $_POST) ? $_POST['apikey'] : null;
